@@ -4,10 +4,12 @@ pub struct CharBuffer {
     pub dimensions: (usize, usize),
 }
 
-
 impl CharBuffer {
     pub fn new(width: usize, height: usize) -> Self {
-        CharBuffer { data: vec![vec![' '; width]; height], dimensions: (width, height) }
+        CharBuffer {
+            data: vec![vec![' '; width]; height],
+            dimensions: (width, height),
+        }
     }
     pub fn get_char(&self, x: usize, y: usize) -> Option<char> {
         self.data.get(y)?.get(x).map(|x| *x)
@@ -36,18 +38,26 @@ impl CharBuffer {
     }
 }
 
-
 impl std::fmt::Display for CharBuffer {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.data.iter().map(|x| [x.iter().map(|x| [x, &' ']).flatten().collect::<String>(), "\n".to_owned()]).flatten().collect::<String>())
+        write!(
+            f,
+            "{}",
+            self.data
+                .iter()
+                .map(|x| [
+                    x.iter().map(|x| [x, &' ']).flatten().collect::<String>(),
+                    "\n".to_owned()
+                ])
+                .flatten()
+                .collect::<String>()
+        )
     }
 }
 
-
 #[cfg(test)]
-mod tests{
+mod tests {
     use super::*;
-
 
     #[test]
     fn char_retreival() {
@@ -56,7 +66,6 @@ mod tests{
         assert_eq!(buf.get_char(2, 2).unwrap(), 'x');
     }
 
-
     #[test]
     #[should_panic]
     fn char_setter_bounds_check() {
@@ -64,14 +73,12 @@ mod tests{
         buf.set_char(2, 2, 'x').unwrap();
     }
 
-
     #[test]
     #[should_panic]
     fn char_getter_bounds_check() {
         let buf = CharBuffer::new(2, 2);
         buf.get_char(2, 2).unwrap();
     }
-
 
     #[test]
     fn char_buf_to_string() {
@@ -81,5 +88,4 @@ mod tests{
         buf.set_char(2, 2, 'z').unwrap();
         assert_eq!(&buf.to_string(), "n     \n    x \n    z \n");
     }
-
 }
