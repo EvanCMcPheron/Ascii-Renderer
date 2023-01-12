@@ -4,7 +4,7 @@ use super::line::Line;
 
 
 #[macro_export]
-macro_rules! v3 {
+macro_rules! vec3 {
     ($x: expr, $y: expr, $z: expr) => {
         Vector3::new($x, $y, $z)
     };
@@ -15,7 +15,7 @@ macro_rules! v3 {
 
 
 #[macro_export]
-macro_rules! v2 {
+macro_rules! vec2 {
     ($x: expr, $y: expr) => {
         Vector2::new($x, $y)
     };
@@ -86,12 +86,12 @@ impl Camera {
         //EX: (0.0, 0.0) is top left of screen and (1.0, 1.0) is bottom right of screen
         let relative = (point - self.position).rotate(self.rotation);
 
-        let thetas = v2!(
-            v2!(relative.z, relative.x).to_polar().y,
-            v2!(relative.z, relative.y).to_polar().y
+        let thetas = vec2!(
+            vec2!(relative.z, relative.x).to_polar().y,
+            vec2!(relative.z, relative.y).to_polar().y
         );
 
-        v2!(
+        vec2!(
             thetas.x / self.fov.x + 0.5,
             thetas.y / self.fov.y + 0.5
         )
@@ -145,9 +145,9 @@ impl std::default::Default for Polygon {
         Self {
             vertices: HashMap::new(),
             edges: vec![],
-            rotation: v3!(0.0, 0.0, 0.0),
-            position: v3!(0.0, 0.0, 0.0),
-            scale: v3!(1.0, 1.0, 1.0),
+            rotation: vec3!(0.0, 0.0, 0.0),
+            position: vec3!(0.0, 0.0, 0.0),
+            scale: vec3!(1.0, 1.0, 1.0),
             char: '+',
         }
     }
@@ -173,20 +173,20 @@ impl Vector3 {
     pub fn rotate(self, rotation_vec: Vector3) -> Self {
         //Rotate around x
         let mut ret = {
-            let z_y = v2!(self.z, self.y).rotate(rotation_vec.x);
-            v3!(self.x, z_y.y, z_y.x)
+            let z_y = vec2!(self.z, self.y).rotate(rotation_vec.x);
+            vec3!(self.x, z_y.y, z_y.x)
         };
         
         //Rotate around y
         ret = {
-            let x_z = v2!(ret.x, ret.z).rotate(rotation_vec.y);
-            v3!(x_z.x, ret.y, x_z.y)
+            let x_z = vec2!(ret.x, ret.z).rotate(rotation_vec.y);
+            vec3!(x_z.x, ret.y, x_z.y)
         };
 
         //Rotate around z
         ret = {
-            let x_y = v2!(ret.x, ret.y).rotate(rotation_vec.z);
-            v3!(x_y.x, x_y.y, ret.z)
+            let x_y = vec2!(ret.x, ret.y).rotate(rotation_vec.z);
+            vec3!(x_y.x, x_y.y, ret.z)
         };
         
         ret
@@ -245,10 +245,10 @@ impl Vector2 {
     }
     pub fn to_polar(self) -> Self {
         //! x: radius, y: theta
-        v2!((self.x * self.x + self.y * self.y).sqrt(), self.y.atan2(self.x))
+        vec2!((self.x * self.x + self.y * self.y).sqrt(), self.y.atan2(self.x))
     }
     pub fn to_cartesian(self) -> Self {
-        v2!(self.x * self.y.cos(), self.x * self.y.sin())
+        vec2!(self.x * self.y.cos(), self.x * self.y.sin())
     }
     pub fn rotate(self, delta_theta: f32) -> Self {
         let mut polar = self.to_polar();

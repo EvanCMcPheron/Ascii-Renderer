@@ -11,10 +11,10 @@ pub fn create_cube() -> rendering::Polygon {
     
     let mut cube = rendering::Polygon::default();
     //Top Square
-    cube.insert_vertex(0, v3!(1.0, 1.0, 1.0));
-    cube.insert_vertex(1, v3!(-1.0, 1.0, 1.0));
-    cube.insert_vertex(2, v3!(-1.0, -1.0, 1.0));
-    cube.insert_vertex(3, v3!(1.0, -1.0, 1.0));
+    cube.insert_vertex(0, vec3!(1.0, 1.0, 1.0));
+    cube.insert_vertex(1, vec3!(-1.0, 1.0, 1.0));
+    cube.insert_vertex(2, vec3!(-1.0, -1.0, 1.0));
+    cube.insert_vertex(3, vec3!(1.0, -1.0, 1.0));
 
     cube.add_edge((0, 1));
     cube.add_edge((1, 2));
@@ -22,10 +22,10 @@ pub fn create_cube() -> rendering::Polygon {
     cube.add_edge((3, 0));
     
     //Bottom Square
-    cube.insert_vertex(4, v3!(1.0, 1.0, -1.0));
-    cube.insert_vertex(5, v3!(-1.0, 1.0, -1.0));
-    cube.insert_vertex(6, v3!(-1.0, -1.0, -1.0));
-    cube.insert_vertex(7, v3!(1.0, -1.0, -1.0));
+    cube.insert_vertex(4, vec3!(1.0, 1.0, -1.0));
+    cube.insert_vertex(5, vec3!(-1.0, 1.0, -1.0));
+    cube.insert_vertex(6, vec3!(-1.0, -1.0, -1.0));
+    cube.insert_vertex(7, vec3!(1.0, -1.0, -1.0));
 
     cube.add_edge((4, 5));
     cube.add_edge((5, 6));

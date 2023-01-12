@@ -2,8 +2,8 @@ use ascii_renderer::*;
 use char_buffer::CharBuffer;
 use runner::{Logic, ProcessReturn, Runner};
 use rendering::{Renderer, Polygon, Camera, Vector3, Vector2};
-use v2;
-use v3;
+use vec2;
+use vec3;
 
 #[derive(Debug)]
 struct MyLogic{
@@ -31,20 +31,17 @@ impl Logic for MyLogic {
 }
 
 fn main() {
-
-    let cube = crate::create_cube();
-
     let mut runner = Runner::new(
         50,
         50,
         25,
         MyLogic {
             renderer: Renderer {
-                polygons: vec![cube],
+                polygons: vec![crate::create_cube()],
                 camera: Camera { 
-                    position: v3!(0.0, 0.0, -7.0),
-                    rotation: v3!(0.0, 0.0, 0.0),
-                    fov: v2!(0.8, 0.8)
+                    position: vec3!(0.0, 0.0, -7.0),
+                    rotation: vec3!(0.0, 0.0, 0.0),
+                    fov: vec2!(0.8, 0.8)
                 }
             },
             time_offset: 0.0,

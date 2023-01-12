@@ -1,5 +1,5 @@
 use super::char_buffer::CharBuffer;
-use std::{io::Write, time::Instant};
+use std::time::Instant;
 
 pub enum ProcessReturn {
     Continue,
