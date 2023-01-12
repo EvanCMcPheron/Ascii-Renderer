@@ -7,6 +7,7 @@ name = "ascii_renderer"
 version = "0.1.0"
 dependencies = [
  "clear_screen",
+ "obj",
 ]
 
 [[package]]
@@ -23,3 +24,9 @@ checksum = "da0114f83ad196a822188f44e3def7916956705df289e6634d326ad86b3f0e9c"
 dependencies = [
  "cc",
 ]
+
+[[package]]
+name = "obj"
+version = "0.10.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "059c95245738cdc7b40078cdd51a23200252a4c0a0a6dd005136152b3f467a4a"

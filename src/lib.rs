@@ -8,16 +8,16 @@ pub use rendering::{Vector2, Vector3};
 pub mod prelude {
     pub use super::char_buffer::CharBuffer;
     pub use super::line::Line;
-    pub use super::rendering::{Camera, Polygon, Renderer};
+    pub use super::rendering::{Camera, Mesh, Renderer};
     pub use super::runner::{Logic, Runner};
     pub use super::{vec2, vec3, Vector2, Vector3};
     pub use super::runner::ProcessReturn;
 }
 
-pub fn create_cube() -> rendering::Polygon {
+pub fn create_cube() -> rendering::Mesh {
     //!Generates a 2 x 2 x 2 cube for testing and sampling
 
-    let mut cube = rendering::Polygon::default();
+    let mut cube = rendering::Mesh::default();
     //Top Square
     cube.insert_vertex(0, vec3!(1.0, 1.0, 1.0));
     cube.insert_vertex(1, vec3!(-1.0, 1.0, 1.0));

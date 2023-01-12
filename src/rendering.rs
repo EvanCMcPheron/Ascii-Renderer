@@ -24,20 +24,20 @@ macro_rules! vec2 {
     };
 }
 
-/// Used for rendering polygons to a CharBuffer.
+/// Used for rendering meshs to a CharBuffer.
 #[derive(Debug, Clone)]
 pub struct Renderer {
-    pub polygons: Vec<Polygon>,
+    pub meshs: Vec<Mesh>,
     pub camera: Camera,
 }
 
 impl Renderer {
-    ///Draws all the polygons to the CharBuffer
+    ///Draws all the meshs to the CharBuffer
     /// # Example
     /// ```
     /// let buf = CharBuffer::new(30, 30);  //Make sure to use a char buffer that has dimensions proportional to the camera's FOV, otherwise everything will be stretched oddly...
     /// let renderer = Renderer {
-    ///     polygons: vec![create_cube()],
+    ///     meshs: vec![create_cube()],
     ///     camera: Camera {
     ///         position: vec3!(0.0, 0.0, -10.0),
     ///         rotation: vec3!(0.0, 0.0, 0.0),
@@ -48,13 +48,13 @@ impl Renderer {
     /// println!("{buf}");
     /// ```
     pub fn draw(&self, buffer: &mut CharBuffer) {
-        for polygon in self.polygons.iter() {
-            self.draw_polygon(polygon, buffer);
+        for mesh in self.meshs.iter() {
+            self.draw_mesh(mesh, buffer);
         }
     }
-    /// Draws an individual polygon.
-    pub fn draw_polygon(&self, polygon: &Polygon, buffer: &mut CharBuffer) {
-        let point_map: HashMap<usize, Vector2> = polygon
+    /// Draws an individual mesh.
+    pub fn draw_mesh(&self, mesh: &Mesh, buffer: &mut CharBuffer) {
+        let point_map: HashMap<usize, Vector2> = mesh
             .get_global_verticies()
             .iter()
             .map(|(&k, &v)| {
@@ -68,11 +68,11 @@ impl Renderer {
                 accum
             });
 
-        let lines: Vec<Line> = polygon
+        let lines: Vec<Line> = mesh
             .edges
             .iter()
             .map(|&point_indexs| Line {
-                char: polygon.char,
+                char: mesh.char,
                 points: (
                     (*point_map.get(&point_indexs.0).unwrap()).into(),
                     (*point_map.get(&point_indexs.1).unwrap()).into(),
@@ -107,10 +107,10 @@ impl Camera {
     }
 }
 
-/// A struct containing all the data for a polygon. Rotation, as with everything in this crate, is in radians, with each value determining the amount that the polygon should be rotated around the given axis.
+/// A struct containing all the data for a mesh. Rotation, as with everything in this crate, is in radians, with each value determining the amount that the mesh should be rotated around the given axis.
 /// Note that vertices are stored on a hashmap, not a vector.
 #[derive(Debug, Clone)]
-pub struct Polygon {
+pub struct Mesh {
     vertices: HashMap<usize, Vector3>,
     edges: Vec<(usize, usize)>,
     pub rotation: Vector3,
@@ -119,7 +119,7 @@ pub struct Polygon {
     pub char: char,
 }
 
-impl Polygon {
+impl Mesh {
     pub fn insert_vertex(&mut self, index: usize, vertex: Vector3) -> Option<Vector3> {
         self.vertices.insert(index, vertex)
     }
@@ -177,7 +177,7 @@ impl Polygon {
     }
 }
 
-impl std::default::Default for Polygon {
+impl std::default::Default for Mesh {
     fn default() -> Self {
         Self {
             vertices: HashMap::new(),

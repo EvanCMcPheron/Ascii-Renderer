@@ -1,6 +1,6 @@
 use ascii_renderer::*;
 use char_buffer::CharBuffer;
-use rendering::{Camera, Polygon, Renderer, Vector2, Vector3};
+use rendering::{Camera, Mesh, Renderer, Vector2, Vector3};
 use runner::{Logic, ProcessReturn, Runner};
 use vec2;
 use vec3;
@@ -18,13 +18,13 @@ impl Logic for MyLogic {
         self.time_offset += delta;
 
         self.renderer.draw(screen_buf);
-        self.renderer.polygons[0].rotation.x += delta * 0.8;
-        self.renderer.polygons[0].rotation.y += delta * 1.0;
-        self.renderer.polygons[0].rotation.z += delta * 1.2;
+        self.renderer.meshs[0].rotation.x += delta * 0.8;
+        self.renderer.meshs[0].rotation.y += delta * 1.0;
+        self.renderer.meshs[0].rotation.z += delta * 1.2;
 
-        self.renderer.polygons[0].scale.x = 1.0 + (self.time_offset * 2.0).sin() * 0.5;
-        self.renderer.polygons[0].scale.y = 1.0 + (self.time_offset * 3.0).sin() * 0.5;
-        self.renderer.polygons[0].scale.z = 1.0 + (self.time_offset * 5.0).sin() * 0.5;
+        self.renderer.meshs[0].scale.x = 1.0 + (self.time_offset * 2.0).sin() * 0.5;
+        self.renderer.meshs[0].scale.y = 1.0 + (self.time_offset * 3.0).sin() * 0.5;
+        self.renderer.meshs[0].scale.z = 1.0 + (self.time_offset * 5.0).sin() * 0.5;
 
         ProcessReturn::Continue
     }
@@ -37,7 +37,7 @@ fn main() {
         25,
         MyLogic {
             renderer: Renderer {
-                polygons: vec![crate::create_cube()],
+                meshs: vec![crate::create_cube()],
                 camera: Camera {
                     position: vec3!(0.0, 0.0, -7.0),
                     rotation: vec3!(0.0, 0.0, 0.0),

@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 clear_screen = "0.1.0"
+obj = "0.10.2"
