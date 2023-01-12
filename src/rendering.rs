@@ -126,8 +126,14 @@ impl Polygon {
     pub fn get_vertex(&mut self, index: usize) -> Option<Vector3> {
         self.vertices.get(&index).map(|&x| x)
     }
-    pub fn insert_vertices(&mut self, vertices: Vec<(usize, Vector3)>) -> Vec<(usize, Option<Vector3>)> {
-        vertices.iter().map(|(index, vertex)| (*index, self.insert_vertex(*index, *vertex))).collect()
+    pub fn insert_vertices(
+        &mut self,
+        vertices: Vec<(usize, Vector3)>,
+    ) -> Vec<(usize, Option<Vector3>)> {
+        vertices
+            .iter()
+            .map(|(index, vertex)| (*index, self.insert_vertex(*index, *vertex)))
+            .collect()
     }
     pub fn remove_vertex(&mut self, index: usize) -> Option<Vector3> {
         self.vertices.remove(&index)
@@ -184,6 +190,7 @@ impl std::default::Default for Polygon {
     }
 }
 
+/// A struct used for storing 3d points, rotation vectors, etc. It is easiest to create using vec3!(x, y, z)
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Vector3 {
     pub x: f32,
@@ -246,6 +253,52 @@ impl std::convert::Into<(f32, f32, f32)> for Vector3 {
     }
 }
 
+impl std::ops::AddAssign for Vector3 {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = vec3!(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z);
+    }
+}
+
+impl std::ops::SubAssign for Vector3 {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
+    }
+}
+
+impl std::ops::Mul<f32> for Vector3 {
+    type Output = Vector3;
+    fn mul(self, rhs: f32) -> Self::Output {
+        vec3!(self.x * rhs, self.y * rhs, self.z * rhs,)
+    }
+}
+
+impl std::ops::Div<f32> for Vector3 {
+    type Output = Vector3;
+    fn div(self, rhs: f32) -> Self::Output {
+        vec3!(self.x / rhs, self.y / rhs, self.z / rhs,)
+    }
+}
+
+impl std::ops::MulAssign<f32> for Vector3 {
+    fn mul_assign(&mut self, rhs: f32) {
+        *self = *self * rhs;
+    }
+}
+
+impl std::ops::DivAssign<f32> for Vector3 {
+    fn div_assign(&mut self, rhs: f32) {
+        *self = *self / rhs;
+    }
+}
+
+impl std::ops::Neg for Vector3 {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        vec3!(-self.x, -self.y, -self.z)
+    }
+}
+
+/// A struct used for storing 2d points, rotation vectors, etc. It is easiest to create using vec2!(x, y)
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Vector2 {
     pub x: f32,
@@ -296,5 +349,50 @@ impl std::ops::Sub for Vector2 {
 impl std::convert::Into<(f32, f32)> for Vector2 {
     fn into(self) -> (f32, f32) {
         (self.x, self.y)
+    }
+}
+
+impl std::ops::AddAssign for Vector2 {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
+    }
+}
+
+impl std::ops::SubAssign for Vector2 {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
+    }
+}
+
+impl std::ops::Mul<f32> for Vector2 {
+    type Output = Vector2;
+    fn mul(self, rhs: f32) -> Self::Output {
+        vec2!(self.x * rhs, self.y * rhs,)
+    }
+}
+
+impl std::ops::Div<f32> for Vector2 {
+    type Output = Vector2;
+    fn div(self, rhs: f32) -> Self::Output {
+        vec2!(self.x / rhs, self.y / rhs,)
+    }
+}
+
+impl std::ops::MulAssign<f32> for Vector2 {
+    fn mul_assign(&mut self, rhs: f32) {
+        *self = *self * rhs;
+    }
+}
+
+impl std::ops::DivAssign<f32> for Vector2 {
+    fn div_assign(&mut self, rhs: f32) {
+        *self = *self / rhs;
+    }
+}
+
+impl std::ops::Neg for Vector2 {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        vec2!(-self.x, -self.y,)
     }
 }
