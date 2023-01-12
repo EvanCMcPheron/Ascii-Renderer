@@ -1,7 +1,22 @@
+///The buffer used by the runner and mutated by the logic struct. Just a wrapper around a 2D char vector.
+/// # Example
+/// ```
+/// let mut buf = CharBuffer::new(3, 3);
+/// buf.set_char(0, 0, 'n').unwrap();
+/// buf.set_char(2, 1, 'x').unwrap();
+/// buf.set_char(2, 2, 'z').unwrap();
+/// assert_eq!(&buf.to_string(), "n     \n    x \n    z \n");
+///```
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct CharBuffer {
     pub data: Vec<Vec<char>>,
     pub dimensions: (usize, usize),
+}
+
+#[derive(Debug)]
+pub enum CharBufferError {
+    RowOutOfRange { row: usize },
+    ItemOutOfRange { index: usize },
 }
 
 impl CharBuffer {
@@ -14,15 +29,15 @@ impl CharBuffer {
     pub fn get_char(&self, x: usize, y: usize) -> Option<char> {
         self.data.get(y)?.get(x).map(|x| *x)
     }
-    pub fn set_char(&mut self, x: usize, y: usize, value: char) -> Result<(), &'static str> {
+    pub fn set_char(&mut self, x: usize, y: usize, value: char) -> Result<(), CharBufferError> {
         let row = self.data.get_mut(y);
         if row.is_none() {
-            return Err("Could not retrieve row, likely y out of range");
+            return Err(CharBufferError::RowOutOfRange { row: y });
         }
 
         let item = row.unwrap().get_mut(x);
         if item.is_none() {
-            return Err("Could not retrieve item, likely x out of range");
+            return Err(CharBufferError::ItemOutOfRange { index: x });
         }
 
         *item.unwrap() = value;
@@ -30,6 +45,7 @@ impl CharBuffer {
         Ok(())
     }
     pub fn fill(&mut self, char: char) {
+        //! Filles the char buffer with the given char
         for row in self.data.iter_mut() {
             for item in row.iter_mut() {
                 *item = char;

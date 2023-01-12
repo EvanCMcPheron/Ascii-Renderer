@@ -1,8 +1,8 @@
-use std::{collections::HashMap, hash::Hash};
 use super::char_buffer::CharBuffer;
 use super::line::Line;
+use std::collections::HashMap;
 
-
+/// Slightly more concise way of declaring a Vector3
 #[macro_export]
 macro_rules! vec3 {
     ($x: expr, $y: expr, $z: expr) => {
@@ -10,10 +10,10 @@ macro_rules! vec3 {
     };
     ($x: expr, $y: expr, $z: expr,) => {
         Vector3::new($x, $y, $z)
-    }
+    };
 }
 
-
+/// Slightly more concise way of declaring a Vector2
 #[macro_export]
 macro_rules! vec2 {
     ($x: expr, $y: expr) => {
@@ -21,56 +21,68 @@ macro_rules! vec2 {
     };
     ($x: expr, $y: expr,) => {
         Vector2::new($x, $y)
-    }
+    };
 }
 
-
+/// Used for rendering polygons to a CharBuffer.
 #[derive(Debug, Clone)]
 pub struct Renderer {
     pub polygons: Vec<Polygon>,
     pub camera: Camera,
 }
 
-
 impl Renderer {
+    ///Draws all the polygons to the CharBuffer
+    /// # Example
+    /// ```
+    /// let buf = CharBuffer::new(30, 30);  //Make sure to use a char buffer that has dimensions proportional to the camera's FOV, otherwise everything will be stretched oddly...
+    /// let renderer = Renderer {
+    ///     polygons: vec![create_cube()],
+    ///     camera: Camera {
+    ///         position: vec3!(0.0, 0.0, -10.0),
+    ///         rotation: vec3!(0.0, 0.0, 0.0),
+    ///         fov: vec2!(0.7, 0.7);   //FOV is in radians
+    ///     },
+    /// };
+    /// renderer.draw(&mut buf);
+    /// println!("{buf}");
+    /// ```
     pub fn draw(&self, buffer: &mut CharBuffer) {
         for polygon in self.polygons.iter() {
             self.draw_polygon(polygon, buffer);
         }
     }
+    /// Draws an individual polygon.
     pub fn draw_polygon(&self, polygon: &Polygon, buffer: &mut CharBuffer) {
-        let point_map: HashMap<usize, Vector2> = polygon.get_global_verticies()
+        let point_map: HashMap<usize, Vector2> = polygon
+            .get_global_verticies()
             .iter()
             .map(|(&k, &v)| {
                 let mut pnt = self.camera.map_point_uv(v);
                 pnt.x *= buffer.dimensions.0 as f32;
                 pnt.y *= buffer.dimensions.1 as f32;
-                (
-                    k,
-                    pnt
-                )
+                (k, pnt)
             })
             .fold(HashMap::new(), |mut accum, (k, v)| {
                 accum.insert(k, v);
                 accum
             });
-        
-        let lines: Vec<Line> = polygon.edges.iter()
-            .map(|&point_indexs| {
-                Line {
-                    char: polygon.char,
-                    points: (
-                        (*point_map.get(&point_indexs.0).unwrap()).into(),
-                        (*point_map.get(&point_indexs.1).unwrap()).into(),
-                    )
-                }
+
+        let lines: Vec<Line> = polygon
+            .edges
+            .iter()
+            .map(|&point_indexs| Line {
+                char: polygon.char,
+                points: (
+                    (*point_map.get(&point_indexs.0).unwrap()).into(),
+                    (*point_map.get(&point_indexs.1).unwrap()).into(),
+                ),
             })
             .collect();
-        
+
         buffer.draw_lines(lines);
     }
 }
-
 
 #[derive(Debug, Clone)]
 pub struct Camera {
@@ -79,8 +91,8 @@ pub struct Camera {
     pub fov: Vector2,
 }
 
-
 impl Camera {
+    /// Maps a global 3d point to the screen. The output is a UV point, meaning the top left of the screen is (0.0, 0.0) and the bottom right is (1.0, 1.0)
     pub fn map_point_uv(&self, point: Vector3) -> Vector2 {
         //Maps a three dimensional GLOBAL point to UV point dictating its location on screen
         //EX: (0.0, 0.0) is top left of screen and (1.0, 1.0) is bottom right of screen
@@ -91,14 +103,12 @@ impl Camera {
             vec2!(relative.z, relative.y).to_polar().y
         );
 
-        vec2!(
-            thetas.x / self.fov.x + 0.5,
-            thetas.y / self.fov.y + 0.5
-        )
+        vec2!(thetas.x / self.fov.x + 0.5, thetas.y / self.fov.y + 0.5)
     }
 }
 
-
+/// A struct containing all the data for a polygon. Rotation, as with everything in this crate, is in radians, with each value determining the amount that the polygon should be rotated around the given axis.
+/// Note that vertices are stored on a hashmap, not a vector.
 #[derive(Debug, Clone)]
 pub struct Polygon {
     vertices: HashMap<usize, Vector3>,
@@ -109,20 +119,42 @@ pub struct Polygon {
     pub char: char,
 }
 
-
 impl Polygon {
     pub fn insert_vertex(&mut self, index: usize, vertex: Vector3) -> Option<Vector3> {
         self.vertices.insert(index, vertex)
     }
+    pub fn get_vertex(&mut self, index: usize) -> Option<Vector3> {
+        self.vertices.get(&index).map(|&x| x)
+    }
+    pub fn insert_vertices(&mut self, vertices: Vec<(usize, Vector3)>) -> Vec<(usize, Option<Vector3>)> {
+        vertices.iter().map(|(index, vertex)| (*index, self.insert_vertex(*index, *vertex))).collect()
+    }
     pub fn remove_vertex(&mut self, index: usize) -> Option<Vector3> {
         self.vertices.remove(&index)
+    }
+    pub fn get_verticies(&self) -> &HashMap<usize, Vector3> {
+        &self.vertices
+    }
+    pub fn get_verticies_mut(&mut self) -> &mut HashMap<usize, Vector3> {
+        &mut self.vertices
     }
     pub fn add_edge(&mut self, edge: (usize, usize)) {
         self.edges.push(edge)
     }
+    pub fn add_edges(&mut self, edges: Vec<(usize, usize)>) {
+        for edge in edges {
+            self.edges.push(edge);
+        }
+    }
     pub fn remove_edge(&mut self, edge: (usize, usize)) -> Option<(usize, usize)> {
         let i = self.edges.iter().enumerate().find(|(_, &x)| x == edge)?.0;
         Some(self.edges.remove(i))
+    }
+    pub fn get_edges(&self) -> &Vec<(usize, usize)> {
+        &self.edges
+    }
+    pub fn get_edges_mut(&mut self) -> &mut Vec<(usize, usize)> {
+        &mut self.edges
     }
     pub fn get_global_verticies(&self) -> HashMap<usize, Vector3> {
         let mut ret = self.vertices.clone();
@@ -139,7 +171,6 @@ impl Polygon {
     }
 }
 
-
 impl std::default::Default for Polygon {
     fn default() -> Self {
         Self {
@@ -153,7 +184,6 @@ impl std::default::Default for Polygon {
     }
 }
 
-
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Vector3 {
     pub x: f32,
@@ -161,14 +191,9 @@ pub struct Vector3 {
     pub z: f32,
 }
 
-
 impl Vector3 {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
-        Self {
-            x,
-            y,
-            z
-        }
+        Self { x, y, z }
     }
     pub fn rotate(self, rotation_vec: Vector3) -> Self {
         //Rotate around x
@@ -176,7 +201,7 @@ impl Vector3 {
             let z_y = vec2!(self.z, self.y).rotate(rotation_vec.x);
             vec3!(self.x, z_y.y, z_y.x)
         };
-        
+
         //Rotate around y
         ret = {
             let x_z = vec2!(ret.x, ret.z).rotate(rotation_vec.y);
@@ -188,11 +213,10 @@ impl Vector3 {
             let x_y = vec2!(ret.x, ret.y).rotate(rotation_vec.z);
             vec3!(x_y.x, x_y.y, ret.z)
         };
-        
+
         ret
     }
 }
-
 
 impl std::ops::Add for Vector3 {
     type Output = Vector3;
@@ -205,7 +229,6 @@ impl std::ops::Add for Vector3 {
     }
 }
 
-
 impl std::ops::Sub for Vector3 {
     type Output = Self;
     fn sub(self, other: Self) -> Self::Output {
@@ -217,17 +240,11 @@ impl std::ops::Sub for Vector3 {
     }
 }
 
-
 impl std::convert::Into<(f32, f32, f32)> for Vector3 {
     fn into(self) -> (f32, f32, f32) {
-        (
-            self.x,
-            self.y,
-            self.z,
-        )
+        (self.x, self.y, self.z)
     }
 }
-
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Vector2 {
@@ -235,17 +252,16 @@ pub struct Vector2 {
     pub y: f32,
 }
 
-
 impl Vector2 {
     pub fn new(x: f32, y: f32) -> Self {
-        Self {
-            x,
-            y
-        }
+        Self { x, y }
     }
     pub fn to_polar(self) -> Self {
         //! x: radius, y: theta
-        vec2!((self.x * self.x + self.y * self.y).sqrt(), self.y.atan2(self.x))
+        vec2!(
+            (self.x * self.x + self.y * self.y).sqrt(),
+            self.y.atan2(self.x)
+        )
     }
     pub fn to_cartesian(self) -> Self {
         vec2!(self.x * self.y.cos(), self.x * self.y.sin())
@@ -257,7 +273,6 @@ impl Vector2 {
     }
 }
 
-
 impl std::ops::Add for Vector2 {
     type Output = Self;
     fn add(self, other: Self) -> Self::Output {
@@ -267,7 +282,6 @@ impl std::ops::Add for Vector2 {
         }
     }
 }
-
 
 impl std::ops::Sub for Vector2 {
     type Output = Self;
@@ -279,13 +293,8 @@ impl std::ops::Sub for Vector2 {
     }
 }
 
-
 impl std::convert::Into<(f32, f32)> for Vector2 {
     fn into(self) -> (f32, f32) {
-        (
-            self.x,
-            self.y,
-        )
+        (self.x, self.y)
     }
 }
-

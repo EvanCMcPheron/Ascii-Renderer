@@ -1,12 +1,12 @@
 use ascii_renderer::*;
 use char_buffer::CharBuffer;
+use rendering::{Camera, Polygon, Renderer, Vector2, Vector3};
 use runner::{Logic, ProcessReturn, Runner};
-use rendering::{Renderer, Polygon, Camera, Vector3, Vector2};
 use vec2;
 use vec3;
 
 #[derive(Debug)]
-struct MyLogic{
+struct MyLogic {
     pub renderer: Renderer,
     pub time_offset: f32,
 }
@@ -14,7 +14,7 @@ struct MyLogic{
 impl Logic for MyLogic {
     fn process(&mut self, screen_buf: &mut CharBuffer, delta: f32) -> ProcessReturn {
         screen_buf.fill(' ');
-        
+
         self.time_offset += delta;
 
         self.renderer.draw(screen_buf);
@@ -38,18 +38,14 @@ fn main() {
         MyLogic {
             renderer: Renderer {
                 polygons: vec![crate::create_cube()],
-                camera: Camera { 
+                camera: Camera {
                     position: vec3!(0.0, 0.0, -7.0),
                     rotation: vec3!(0.0, 0.0, 0.0),
-                    fov: vec2!(0.8, 0.8)
-                }
+                    fov: vec2!(0.8, 0.8),
+                },
             },
             time_offset: 0.0,
         },
     );
     runner.run(true);
 }
-
-
-
-

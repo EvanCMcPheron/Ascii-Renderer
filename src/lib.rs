@@ -1,14 +1,21 @@
 pub mod char_buffer;
 pub mod line;
-pub mod runner;
 pub mod rendering;
-
+pub mod runner;
 
 pub use rendering::{Vector2, Vector3};
 
+pub mod prelude {
+    pub use super::char_buffer::CharBuffer;
+    pub use super::line::Line;
+    pub use super::rendering::{Camera, Polygon, Renderer};
+    pub use super::runner::{Logic, Runner};
+    pub use super::{vec2, vec3, Vector2, Vector3};
+}
 
 pub fn create_cube() -> rendering::Polygon {
-    
+    //!Generates a 2 x 2 x 2 cube for testing and sampling
+
     let mut cube = rendering::Polygon::default();
     //Top Square
     cube.insert_vertex(0, vec3!(1.0, 1.0, 1.0));
@@ -20,7 +27,7 @@ pub fn create_cube() -> rendering::Polygon {
     cube.add_edge((1, 2));
     cube.add_edge((2, 3));
     cube.add_edge((3, 0));
-    
+
     //Bottom Square
     cube.insert_vertex(4, vec3!(1.0, 1.0, -1.0));
     cube.insert_vertex(5, vec3!(-1.0, 1.0, -1.0));

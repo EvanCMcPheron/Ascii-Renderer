@@ -1,6 +1,7 @@
 use super::char_buffer::CharBuffer;
-use super::{Vector2, vec2};
+use super::Vector2;
 
+/// The struct fed to a CharBuffer for drawing lines.
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Line {
     pub char: char,
@@ -14,8 +15,8 @@ impl Into<((usize, usize), (usize, usize))> for Line {
             value.round() as usize
         }
 
-        if (self.points.0 .x < 0.0 && self.points.1 .x < 0.0)
-            || (self.points.0 .y < 0.0 && self.points.1 .y < 0.0)
+        if (self.points.0.x < 0.0 && self.points.1.x < 0.0)
+            || (self.points.0.y < 0.0 && self.points.1.y < 0.0)
         {
             //line is entirely offscreen, the coords are set near the 32-bit unsigned int limit
             return (
@@ -23,26 +24,20 @@ impl Into<((usize, usize), (usize, usize))> for Line {
                 (4_000_000_000, 4_000_000_000),
             );
         }
-        if self.points.0 .x == self.points.1 .x || self.points.0 .y == self.points.1 .y {
+        if self.points.0.x == self.points.1.x || self.points.0.y == self.points.1.y {
             //Vertical lines and Horizontal lines - converting direcly to usize is valid as it will just shift any offscreen endpoint vertically/horizontally until they are 0
             return (
-                (
-                    f32_to_usize(self.points.0 .x),
-                    f32_to_usize(self.points.0 .y),
-                ),
-                (
-                    f32_to_usize(self.points.1 .x),
-                    f32_to_usize(self.points.1 .y),
-                ),
+                (f32_to_usize(self.points.0.x), f32_to_usize(self.points.0.y)),
+                (f32_to_usize(self.points.1.x), f32_to_usize(self.points.1.y)),
             );
         }
 
-        let first = if self.points.0 .x < self.points.1 .x {
+        let first = if self.points.0.x < self.points.1.x {
             self.points.0
         } else {
             self.points.1
         }; //Handles if the second point comes before the first.
-        let second = if self.points.0 .x < self.points.1 .x {
+        let second = if self.points.0.x < self.points.1.x {
             self.points.1
         } else {
             self.points.0
@@ -90,24 +85,36 @@ impl Into<((usize, usize), (usize, usize))> for Line {
         } // We don't need to worry about if the second point is left of the screen, as we know that the first point is the leftmost one and if they are both offscreen to the left then there was an early return
 
         (
-            (
-                f32_to_usize(self.points.0 .x),
-                f32_to_usize(self.points.0 .y),
-            ),
-            (
-                f32_to_usize(self.points.1 .x),
-                f32_to_usize(self.points.1 .y),
-            ),
+            (f32_to_usize(self.points.0.x), f32_to_usize(self.points.0.y)),
+            (f32_to_usize(self.points.1.x), f32_to_usize(self.points.1.y)),
         )
     }
 }
 
 impl CharBuffer {
     pub fn draw_line(&mut self, line: Line) {
+        //! Draws an individual line to the buffer
         let coords: ((usize, usize), (usize, usize)) = line.into();
         draw_line(line.char, self, coords.0, coords.1);
     }
     pub fn draw_lines(&mut self, lines: Vec<Line>) {
+        //! Draws lines to the buffer. The first lines in the vector will be drawn first.
+        //! # Example
+        //! ```
+        //! let mut buf = CharBuffer::new(10, 10);
+        //! let lines = vec![
+        //!     Line {
+        //!         char: '+',
+        //!         points: (vec2!(2.0, 2.0), vec2!(8.0, 8.0)),
+        //!     },
+        //!     Line {
+        //!         char: '=',
+        //!         points: (vec2!(2.0, 8.0), vec2!(8.0, 2.0)),
+        //!     },
+        //! ];
+        //! buf.draw_lines(lines);
+        //! println!("{buf}");
+        //! ```
         for line in lines {
             self.draw_line(line);
         }
