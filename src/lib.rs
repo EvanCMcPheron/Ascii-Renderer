@@ -11,6 +11,7 @@ pub mod prelude {
     pub use super::rendering::{Camera, Polygon, Renderer};
     pub use super::runner::{Logic, Runner};
     pub use super::{vec2, vec3, Vector2, Vector3};
+    pub use super::runner::ProcessReturn;
 }
 
 pub fn create_cube() -> rendering::Polygon {
