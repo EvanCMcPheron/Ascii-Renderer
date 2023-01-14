@@ -1,6 +1,5 @@
 use ascii_renderer::prelude::*;
 
-
 struct MyLogic {
     pub renderer: Renderer,
     pub time_offset: f32,
@@ -10,14 +9,14 @@ impl Logic for MyLogic {
     fn process(&mut self, screen_buf: &mut CharBuffer, delta: f32) -> ProcessReturn {
         screen_buf.fill(' ');
 
-        self.time_offset += delta;  //Keeps track of time
+        self.time_offset += delta; //Keeps track of time
 
         self.renderer.draw(screen_buf);
-        self.renderer.meshs[0].rotation.x += delta * 0.8;    //Rotates the cube
+        self.renderer.meshs[0].rotation.x += delta * 0.8; //Rotates the cube
         self.renderer.meshs[0].rotation.y += delta * 1.0;
         self.renderer.meshs[0].rotation.z += delta * 1.2;
 
-        self.renderer.meshs[0].scale.x = 1.0 + (self.time_offset * 2.0).sin() * 0.5;     //Scales the cube according to sin(time)
+        self.renderer.meshs[0].scale.x = 1.0 + (self.time_offset * 2.0).sin() * 0.5; //Scales the cube according to sin(time)
         self.renderer.meshs[0].scale.y = 1.0 + (self.time_offset * 3.0).sin() * 0.5;
         self.renderer.meshs[0].scale.z = 1.0 + (self.time_offset * 5.0).sin() * 0.5;
 

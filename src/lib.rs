@@ -1,5 +1,6 @@
 pub mod char_buffer;
 pub mod line;
+pub mod obj;
 pub mod rendering;
 pub mod runner;
 
@@ -8,10 +9,12 @@ pub use rendering::{Vector2, Vector3};
 pub mod prelude {
     pub use super::char_buffer::CharBuffer;
     pub use super::line::Line;
+    pub use super::obj::AsciiObj;
+    pub use super::obj::ObjError;
     pub use super::rendering::{Camera, Mesh, Renderer};
+    pub use super::runner::ProcessReturn;
     pub use super::runner::{Logic, Runner};
     pub use super::{vec2, vec3, Vector2, Vector3};
-    pub use super::runner::ProcessReturn;
 }
 
 pub fn create_cube() -> rendering::Mesh {
