@@ -11,7 +11,7 @@ impl Logic for MyLogic {
     }
 }
 ```
-There will be more on this later, but for now just make process return ```ProcessReturn::Continue```.
+There will be more on this later, but for now just make ```process()``` return ```ProcessReturn::Continue```.
 
 Next, create a ```Runner```, pass an instance of your logic struct to it, and run it.
 ```rust
@@ -38,7 +38,7 @@ The runner will proceed to run a loop (with a maximum frequency dictated by the 
 
 The ```delta``` parameter is the amount of time (in seconds) that has passed since the last frame was drawn to the screen. It is necesary for non-frame-dependant movement.
 
-The ```CharBuffer``` can be mutated by manually changing individual chars (```set_char(x, y, char)```), filling the entire buffer (```fill(char)```), drawing lines (```draw_line(line)```), or by rendering 3D graphics to it (more on that later). The buffer is maintained between frames, you almost always should start ```process()``` with ```screen_buf.fill(' ');```.
+The ```CharBuffer``` can be mutated by changing individual chars (```set_char(&mut self, x, y, char)```), filling the entire buffer (```fill(&mut self, char)```), drawing lines (```draw_line(&mut self, line)```), or by rendering 3D graphics to it (more on that later). The buffer is maintained between frames, you almost always should start ```process()``` with ```screen_buf.fill(' ');```.
 ```rust
 use ascii_renderer::prelude::*;
 
@@ -72,7 +72,7 @@ fn main() {
     ).run(true);    //true = clears the terminal between frames
 }
 ```
-To render 3D graphics to the ```CharBuffer```, we need to use a ```Renderer```. We don't want to instantiate a new ```Renderer``` every single frame, so we should store an instance of a ```Renderer``` wtihin a field of our logic struct. To draw graphics to the ```CharBuffer```, simply call ```draw()``` on the renderer, passing a mutable reference to the ```CharBuffer``` to it. In order to have something to render, you can create a 2x2x2 cube mesh using the ```create_cube()``` function and pass the cube to the renderer in it's declaration.
+To render 3D graphics to the ```CharBuffer```, we need to use a ```Renderer```. We don't want to instantiate a new ```Renderer``` every single frame, so we should store an instance of a ```Renderer``` wtihin a field of our logic struct. To draw graphics to the ```CharBuffer```, simply call ```draw()``` on the renderer, passing a mutable reference to the ```CharBuffer``` to it. In order to have something to render, you can create a 2x2x2 cube mesh using the ```create_cube()``` function and pass the cube to the renderer within it's declaration.
 ```rust
 use ascii_renderer::prelude::*;
 
@@ -162,7 +162,7 @@ fn main() {
     runner.run(true);
 }
 ```
-Finally, to load meshes from file (currently only .OBJ is supported), run the function ```AsciiObj::load(path)```, which will return a ```Result<AsciiObj, ObjError>```. After ```unwrap()```ing it, the ```AsciiObj``` can be converted into a ```Vec<Mesh>```, which all together would look like ```let my_meshes: Vec<Mesh> = AsciiObj::load("face.obj").unwrap().into();```. However, often time meshes are far from the origin, which will cause the mesh to appear to spin in a large circle centered around the origin rather than rotate around a point when rotated. Because of that, allways run the ```recenter()``` method on the mesh before passing it to the renderer. ```recenter()``` returns the position the mesh was originally centered at, if you wish to maintain it's in-file position. The example in (examples/obj_loading.rs)[examples/obj_loading.rs] demonstrates overall how to load objs:
+Finally, to load meshes from file (currently only .OBJ is supported), run the function ```AsciiObj::load(path)```, which will return a ```Result<AsciiObj, ObjError>```. After ```unwrap()```ing it, the ```AsciiObj``` can be converted into a ```Vec<Mesh>``` using ```into()```, which all together would look like ```let my_meshes: Vec<Mesh> = AsciiObj::load("face.obj").unwrap().into();```. However, often times meshes are far from the origin, causing the mesh to appear to spin in a large circle centered around the origin rather than rotate around a point when rotated. Because of that, allways run the ```recenter()``` method on the mesh before passing it to the renderer. ```recenter()``` returns the position the mesh was originally centered at, if you wish to maintain it's in-file position. The example in (examples/obj_loading.rs)[examples/obj_loading.rs] demonstrates overall how to load objs:
 ```rust
 use ascii_renderer::prelude::*;
 
