@@ -48,7 +48,7 @@ impl Logic for MyLogic {
     fn process(&mut self, screen_buf: &mut CharBuffer, delta: f32) -> ProcessReturn {
         screen_buf.fill(' ');
 
-        let fps_string = (1.0 / delta).into();
+        let fps_string: String = (1.0 / delta).into();
         let mut fps_chars = fps.chars();
 
         screen_buf.set_char(0, 0, fps_chars.next().unwrap()).unwrap(); //Will write the fps to the screen
@@ -77,14 +77,14 @@ To render 3D graphics to the ```CharBuffer```, we need to use a ```Renderer```. 
 use ascii_renderer::prelude::*;
 
 struct MyLogic {
-    renderer: Renderer,
+    pub renderer: Renderer,
 }
 
 impl Logic for MyLogic {
     fn process(&mut self, screen_buf: &mut CharBuffer, delta: f32) -> ProcessReturn {
         screen_buf.fill(' ');
 
-        let fps_string = (1.0 / delta).into();
+        let fps_string: String = (1.0 / delta).into();
         let mut fps_chars = fps.chars();
 
         self.renderer.draw(screen_buf);
@@ -162,7 +162,7 @@ fn main() {
     runner.run(true);
 }
 ```
-Finally, to load meshes from file (currently only .OBJ is supported), run the function ```AsciiObj::load(path)```, which will return a ```Result<AsciiObj, ObjError>```. After ```unwrap()```ing it, the ```AsciiObj``` can be converted into a ```Vec<Mesh>``` using ```into()```, which all together would look like ```let my_meshes: Vec<Mesh> = AsciiObj::load("face.obj").unwrap().into();```. However, often times meshes are far from the origin, causing the mesh to appear to spin in a large circle centered around the origin rather than rotate around a point when rotated. Because of that, allways run the ```recenter()``` method on the mesh before passing it to the renderer. ```recenter()``` returns the position the mesh was originally centered at, if you wish to maintain it's in-file position. The example in (examples/obj_loading.rs)[examples/obj_loading.rs] demonstrates overall how to load objs:
+Finally, to load meshes from file (currently only .OBJ is supported), run the function ```AsciiObj::load(path)```, which will return a ```Result<AsciiObj, ObjError>```. After ```unwrap()```ing it, the ```AsciiObj``` can be converted into a ```Vec<Mesh>``` using ```into()```, which all together would look like ```let my_meshes: Vec<Mesh> = AsciiObj::load("face.obj").unwrap().into();```. However, often times meshes are far from the origin, causing the mesh to appear to spin in a large circle centered around the origin rather than rotate around a point when rotated. Because of that, allways run the ```recenter()``` method on the mesh before passing it to the renderer. ```recenter()``` returns the position the mesh was originally centered at, if you wish to maintain it's in-file position. This example demonstrates overall how to load objs:
 ```rust
 use ascii_renderer::prelude::*;
 
