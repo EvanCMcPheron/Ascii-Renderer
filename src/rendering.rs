@@ -176,7 +176,13 @@ impl Mesh {
         ret
     }
     /// Gets the average position of all the vertices and centers the mesh to be centered around that point. Good for meshes you want to rotate.
-    pub fn recenter(&mut self) {
+    /// returns the global coords to where the mesh was previously centered. If the mesh's position is set to this, then the mesh will go back to it's previous position, only now it's center is appropriatly placed so rotation won't look broken.
+    /// EX:
+    /// ```
+    /// let new_position = my_mesh.recenter();
+    /// my_mesh.position = new_position;
+    /// ```
+    pub fn recenter(&mut self) -> Vector3 {
         let avg_pos = self
             .vertices
             .values()
@@ -185,6 +191,7 @@ impl Mesh {
         self.vertices
             .values_mut()
             .for_each(|vertex| *vertex -= avg_pos);
+        avg_pos
     }
 }
 
