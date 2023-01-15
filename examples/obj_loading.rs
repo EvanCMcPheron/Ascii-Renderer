@@ -18,13 +18,12 @@ impl Logic for MyLogic {
 }
 
 fn main() {
-    let my_obj = AsciiObj::load("face.obj").unwrap();
-    let mut my_meshes: Vec<Mesh> = my_obj.into();
-    my_meshes.iter_mut().for_each(|x| {
+    let mut my_meshes: Vec<Mesh> = AsciiObj::load("face.obj").unwrap().into();
+    my_meshes.iter_mut().for_each(|mesh| {
         // * Scales the obj down. rotates it so that it is rightside up, and recenters it.
-        x.scale = vec3!(0.01, 0.01, 0.01);
-        x.rotation = vec3!(std::f32::consts::PI, 0.0, 0.0);
-        x.recenter();   // * This OBJ is really far from the origin for some reason, so if it is not recentered it 
+        mesh.scale = vec3!(0.01, 0.01, 0.01);
+        mesh.rotation = vec3!(std::f32::consts::PI, 0.0, 0.0);
+        mesh.recenter();   // * This OBJ is really far from the origin for some reason, so if it is not recentered it 
     });
     let mut runner = Runner::new(
         50,
