@@ -1,9 +1,4 @@
-use ascii_renderer::{prelude::AsciiObj, *};
-use char_buffer::CharBuffer;
-use rendering::{Camera, Mesh, Renderer, Vector2, Vector3};
-use runner::{Logic, ProcessReturn, Runner};
-use vec2;
-use vec3;
+use ascii_renderer::prelude::*;
 
 #[derive(Debug)]
 struct MyLogic {
@@ -16,7 +11,7 @@ impl Logic for MyLogic {
 
         self.renderer.draw(screen_buf);
 
-        
+        self.renderer.meshs.first_mut().unwrap().rotation.y += delta;
 
         ProcessReturn::Continue
     }
@@ -25,9 +20,11 @@ impl Logic for MyLogic {
 fn main() {
     let my_obj = AsciiObj::load("face.obj").unwrap();
     let mut my_meshes: Vec<Mesh> = my_obj.into();
-    my_meshes
-        .iter_mut()
-        .for_each(|x| x.scale = vec3!(0.01, 0.01, 0.01));
+    my_meshes.iter_mut().for_each(|x| {
+        x.scale = vec3!(0.01, 0.01, 0.01);
+        x.rotation = vec3!(std::f32::consts::PI, 0.0, 0.0);
+        x.recenter();
+    });
     let mut runner = Runner::new(
         50,
         50,
@@ -36,7 +33,7 @@ fn main() {
             renderer: Renderer {
                 meshs: my_meshes,
                 camera: Camera {
-                    position: vec3!(7.53688964 * 0.01, 6.0, (-0.435878601 * 0.01) + 10.0),
+                    position: vec3!(0.0, 0.0, -3.0),
                     rotation: vec3!(0.0, 0.0, 0.0),
                     fov: vec2!(0.8, 0.8),
                 },

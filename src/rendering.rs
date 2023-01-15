@@ -175,6 +175,17 @@ impl Mesh {
         });
         ret
     }
+    /// Gets the average position of all the vertices and centers the mesh to be centered around that point. Good for meshes you want to rotate.
+    pub fn recenter(&mut self) {
+        let avg_pos = self
+            .vertices
+            .values()
+            .fold(vec3!(0.0, 0.0, 0.0), |accum, vertex| accum + *vertex)
+            / self.vertices.values().count() as f32;
+        self.vertices
+            .values_mut()
+            .for_each(|vertex| *vertex -= avg_pos);
+    }
 }
 
 impl std::default::Default for Mesh {
@@ -222,6 +233,17 @@ impl Vector3 {
         };
 
         ret
+    }
+    pub fn len(self) -> f32 {
+        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+    }
+    pub fn normalize(self) -> Self {
+        let len = self.len();
+        if len == 1.0 || len == 0.0 {
+            return self;
+        } else {
+            vec3!(self.x / len, self.y / len, self.z / len)
+        }
     }
 }
 
@@ -298,6 +320,33 @@ impl std::ops::Neg for Vector3 {
     }
 }
 
+impl std::ops::Add<Vector2> for Vector3 {
+    type Output = Vector3;
+
+    fn add(self, rhs: Vector2) -> Self::Output {
+        vec3!(self.x + rhs.x, self.y + rhs.y, self.z)
+    }
+}
+
+impl std::ops::Sub<Vector2> for Vector3 {
+    type Output = Vector3;
+    fn sub(self, rhs: Vector2) -> Self::Output {
+        vec3!(self.x - rhs.x, self.y - rhs.y, self.z)
+    }
+}
+
+impl std::ops::AddAssign<Vector2> for Vector3 {
+    fn add_assign(&mut self, rhs: Vector2) {
+        *self = *self + rhs;
+    }
+}
+
+impl std::ops::SubAssign<Vector2> for Vector3 {
+    fn sub_assign(&mut self, rhs: Vector2) {
+        *self = *self - rhs;
+    }
+}
+
 /// A struct used for storing 2d points, rotation vectors, etc. It is easiest to create using vec2!(x, y)
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Vector2 {
@@ -323,6 +372,17 @@ impl Vector2 {
         let mut polar = self.to_polar();
         polar.y += delta_theta;
         polar.to_cartesian()
+    }
+    pub fn len(self) -> f32 {
+        (self.x * self.x + self.y * self.y).sqrt()
+    }
+    pub fn normalize(self) -> Self {
+        let len = self.len();
+        if len == 1.0 || len == 0.0 {
+            return self;
+        } else {
+            vec2!(self.x / len, self.y / len)
+        }
     }
 }
 
@@ -394,5 +454,18 @@ impl std::ops::Neg for Vector2 {
     type Output = Self;
     fn neg(self) -> Self::Output {
         vec2!(-self.x, -self.y,)
+    }
+}
+
+impl std::ops::Sub<Vector3> for Vector2 {
+    type Output = Self;
+    fn sub(self, rhs: Vector3) -> Self::Output {
+        vec2!(self.x - rhs.x, self.y - rhs.y)
+    }
+}
+
+impl std::ops::SubAssign<Vector3> for Vector2 {
+    fn sub_assign(&mut self, rhs: Vector3) {
+        *self = *self - rhs;
     }
 }
