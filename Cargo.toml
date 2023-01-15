@@ -7,7 +7,7 @@ authors = ["Evan McPheron"]
 repository = "https://github.com/EvanCMcPheron/ascii_renderer"
 license = "MIT"
 include = ["src/*", "README.md", "LICENSE", "tutorial.md"]
-keywords = ["Ascii", "text", "3D", "Wireframe", "Renderer", "terminal", "command", "line"]
+keywords = ["text", "3D", "Wireframe", "Renderer", "terminal"]
 categories = ["rendering", "command-line-utilities", ]
 
 
