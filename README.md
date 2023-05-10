@@ -3,6 +3,6 @@ Ascii Renderer is a wireframe rendering engine that renders wireframe models int
 
 # Showcase
 **Warping Cube** *(click)*
-[![CLICK HERE](https://i.imgur.com/wpAzShS.png)](https://youtu.be/faViJzniUQA)
+[![CLICK HERE](https://i.imgur.com/wpAzShS.png)](https://youtu.be/EwfP0co8Lkg)
 **Rotating Head** *(click)*
-[![CLICK HERE](https://i.imgur.com/loXsRC2.png)](https://youtu.be/UOlbZk48o1I)
+[![CLICK HERE](https://i.imgur.com/loXsRC2.png)](https://youtu.be/zz09hR0w-mY)
