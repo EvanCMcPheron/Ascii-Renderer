@@ -12,5 +12,5 @@ categories = ["rendering", "command-line-utilities", ]
 
 
 [dependencies]
-clear_screen = "0.1.0"
+crossterm = "0.26.1"
 obj = "0.10.2"
