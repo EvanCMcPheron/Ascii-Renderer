@@ -92,8 +92,9 @@ impl Logic for MyLogic {
     fn process(&mut self, screen_buf: &mut CharBuffer, delta: f32) -> ProcessReturn {
         screen_buf.fill(' ');
 
-        let fps_string: String = (1.0 / delta).into();
-        let mut fps_chars = fps.chars();
+        // FIXME: i think this could be left out entirely
+        let fps_string = (1.0 / delta).to_string();
+        let mut fps_chars = fps_string.chars();
 
         self.renderer.draw(screen_buf);
 
