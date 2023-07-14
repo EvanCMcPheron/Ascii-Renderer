@@ -54,14 +54,14 @@ impl Renderer {
     }
     /// Draws an individual mesh.
     pub fn draw_mesh(&self, mesh: &Mesh, buffer: &mut CharBuffer) {
-        let point_map: HashMap<usize, Vector2> = mesh
+        let point_map: HashMap<usize, (Vector2, bool)> = mesh
             .get_global_verticies()
             .iter()
             .map(|(&k, &v)| {
                 let mut pnt = self.camera.map_point_uv(v);
                 pnt.x *= buffer.dimensions.0 as f32;
                 pnt.y *= buffer.dimensions.1 as f32;
-                (k, pnt)
+                (k, (pnt, self.camera.is_pnt_on_screen(v)))
             })
             .fold(HashMap::new(), |mut accum, (k, v)| {
                 accum.insert(k, v);
@@ -71,12 +71,18 @@ impl Renderer {
         let lines: Vec<Line> = mesh
             .edges
             .iter()
-            .map(|&point_indexs| Line {
-                char: mesh.char,
-                points: (
-                    (*point_map.get(&point_indexs.0).unwrap()).into(),
-                    (*point_map.get(&point_indexs.1).unwrap()).into(),
-                ),
+            .filter_map(|&point_indexs| {
+                let ((point1, is_on_screen1), (point2, is_on_screen2)) = (*point_map.get(&point_indexs.0).unwrap(), *point_map.get(&point_indexs.1).unwrap());
+
+                if !is_on_screen1 && !is_on_screen2 {return None;}
+
+                Some(Line {
+                    char: mesh.char,
+                    points: (
+                        (point1).into(),
+                        (point2).into(),
+                    ),
+                })
             })
             .collect();
 
@@ -92,9 +98,9 @@ pub struct Camera {
 }
 
 impl Camera {
-    /// Maps a global 3d point to the screen. The output is a UV point, meaning the top left of the screen is (0.0, 0.0) and the bottom right is (1.0, 1.0)
+    /// Maps a global 3d point to the screen. The output is a UV point, meaning the top left of the screen is (0.0, 0.0) and the bottom right is (1.0, 1.0).
     pub fn map_point_uv(&self, point: Vector3) -> Vector2 {
-        //Maps a three dimensional GLOBAL point to UV point dictating its location on screen
+        // Maps a three dimensional GLOBAL point to UV point dictating its location on screen
         //EX: (0.0, 0.0) is top left of screen and (1.0, 1.0) is bottom right of screen
         let relative = (point - self.position).rotate(self.rotation);
 
@@ -104,6 +110,13 @@ impl Camera {
         );
 
         vec2!(thetas.x / self.fov.x + 0.5, thetas.y / self.fov.y + 0.5)
+    }
+
+    /// Checks if a point is on screen
+    pub fn is_pnt_on_screen(&self, point: Vector3) -> bool {
+        let relative = (point - self.position).rotate(self.rotation);
+        
+        !(vec2!(relative.z, relative.x).to_polar().y.abs() > self.fov.x / 2.0) && !(vec2!(relative.z, relative.y).to_polar().y.abs() > self.fov.y / 2.0)
     }
 }
 

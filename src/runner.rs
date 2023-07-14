@@ -1,6 +1,10 @@
 use super::char_buffer::CharBuffer;
+use crossterm::{
+    cursor::{Hide, MoveTo},
+    execute,
+    style::Print,
+};
 use std::time::Instant;
-use crossterm::{execute, style::Print, cursor::{Hide, MoveTo}};
 
 ///The enum returned by the process fn of a logic class. If End is returned, the runner will cease, otherwise it will continue.
 pub enum ProcessReturn {
@@ -61,11 +65,11 @@ impl<L: Logic> Runner<L> {
             execute!(
                 std::io::stdout(),
                 Hide,
-                MoveTo(0,0),
+                MoveTo(0, 0),
                 Print(format!("{buf}", buf = self.buf)),
-            ).unwrap();
-        }
-        else {
+            )
+            .unwrap();
+        } else {
             println!("{buf}", buf = self.buf);
         }
         ret

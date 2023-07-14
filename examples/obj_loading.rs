@@ -23,7 +23,7 @@ fn main() {
         // * Scales the obj down. rotates it so that it is rightside up, and recenters it.
         mesh.scale = vec3!(0.01, 0.01, 0.01);
         mesh.rotation = vec3!(std::f32::consts::PI, 0.0, 0.0);
-        mesh.recenter();   // * This OBJ is really far from the origin for some reason, so if it is not recentered it 
+        mesh.recenter(); // * This OBJ is really far from the origin for some reason, so if it is not recentered it
     });
     let mut runner = Runner::new(
         50,
