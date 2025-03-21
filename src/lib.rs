@@ -1,6 +1,6 @@
 /*!
 # Quickstart
-To start, create create a struct and implement the ```Logic``` trait on it:
+To start the most basic implimentation of this crate, create a struct and implement the ```Logic``` trait on it:
 ```rust
 use ascii_renderer::prelude::*;
 
@@ -12,7 +12,7 @@ impl Logic for MyLogic {
     }
 }
 ```
-There will be more on this later, but for now just make ```process()``` return ```ProcessReturn::Continue```.
+This implimentation defines that every single frame the program will do nothing and then continue, the most basic possible logic.
 
 Next, create a ```Runner```, pass an instance of your logic struct to it, and run it.
 ```rust
@@ -35,11 +35,11 @@ fn main() {
     ).run(true);    //true = clears the terminal between frames
 }
 ```
-The runner will proceed to run a loop (with a maximum frequency dictated by the ```fps_cap```) where it will run it's logic's ```process()``` function, which will mutate a ```CharBuffer```, then it will print that ```CharBuffer``` to the screen, and then it will repeat if ```process()``` returned ```ProcessReturn::Continue```.
+The runner will proceed to run in a loop where it will run it's logic's ```process()``` method, which can mutate a ```CharBuffer```, then the runner will print that ```CharBuffer``` to the screen, and then it will repeat if ```process()``` returned ```ProcessReturn::Continue```.
 
-The ```delta``` parameter is the amount of time (in seconds) that has passed since the last frame was drawn to the screen. It is necesary for non-frame-dependant movement.
+The ```delta``` parameter of the process method is the amount of time (in seconds) that has passed since the last frame was drawn to the screen. It is necesary for non-frame-dependant movement.
 
-The ```CharBuffer``` can be mutated by changing individual chars (```set_char(&mut self, x, y, char)```), filling the entire buffer (```fill(&mut self, char)```), drawing lines (```draw_line(&mut self, line)```), or by rendering 3D graphics to it (more on that later). The buffer is maintained between frames, you almost always should start ```process()``` with ```screen_buf.fill(' ');```.
+The ```CharBuffer``` can be mutated by changing individual chars (```set_char(&mut self, x, y, char)```), filling the entire buffer (```fill(&mut self, char)```), drawing lines (```draw_line(&mut self, line)```), or by rendering 3D graphics to it. The buffer is maintained between frames, you almost always should start ```process()``` with ```screen_buf.fill(' ');```.
 ```rust
 use ascii_renderer::prelude::*;
 
@@ -163,7 +163,11 @@ fn main() {
     runner.run(true);
 }
 ```
-Finally, to load meshes from file (currently only .OBJ is supported), run the function ```AsciiObj::load(path)```, which will return a ```Result<AsciiObj, ObjError>```. After ```unwrap()```ing it, the ```AsciiObj``` can be converted into a ```Vec<Mesh>``` using ```into()```, which all together would look like ```let my_meshes: Vec<Mesh> = AsciiObj::load("face.obj").unwrap().into();```. However, often times meshes are far from the origin, causing the mesh to appear to spin in a large circle centered around the origin rather than rotate around a point when rotated. Because of that, allways run the ```recenter()``` method on the mesh before passing it to the renderer. ```recenter()``` returns the position the mesh was originally centered at, if you wish to maintain it's in-file position. This example demonstrates overall how to load objs:
+To load meshes from file (currently only .OBJ is supported), run the function ```AsciiObj::load(path)```, which will return a ```Result<AsciiObj, ObjError>```. After ```unwrap()```ing it, the ```AsciiObj``` can be converted into a ```Vec<Mesh>``` using ```into()```, which all together would look like ```let my_meshes: Vec<Mesh> = AsciiObj::load("face.obj").unwrap().into();```. 
+
+Often times meshes are far from the origin, causing the mesh to appear to spin in a large circle centered around the origin rather than rotate around a point when rotated. To fix this, you can run the ```recenter()``` method on the mesh before passing it to the renderer. ```recenter()``` returns the position the mesh was originally centered at, if you wish to maintain it's in-file position. 
+
+This example demonstrates overall how to load objs:
 ```rust
 use ascii_renderer::prelude::*;
 
